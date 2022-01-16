@@ -1,6 +1,6 @@
 {
   "name": "fookie-cache",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Cache plugin for Fookie JS",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/umudikk/fookie-cache#readme",
   "dependencies": {
-    "redis": "^4.0.1"
+    "fookie": "^0.7.91"
   }
 }
