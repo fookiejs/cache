@@ -17,6 +17,7 @@ module.exports.plugin = async function (ctx) {
             })
             if (res.data.length > 0) {
                 payload.response.data = res.data[0].data
+                console.log("from cache" , res.data)
             }
             return true
         }
