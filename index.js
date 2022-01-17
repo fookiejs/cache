@@ -52,14 +52,17 @@ module.exports.plugin = async function (ctx) {
                     model: payload.model,
                 }
             })
-            console.log("send_to_cache", res.data);
-
+            console.log("clear_cache", res.data);
         }
     })
 
     let after = ctx.local.get("mixin", "after")
+
     after.object.lifecycle.read.rule.push("is_cached")
     after.object.lifecycle.read.effect.push("send_to_cache")
+    after.object.lifecycle.count.effect.push("send_to_cache")
+    after.object.lifecycle.create.effect.push("clear_cache")
+    after.object.lifecycle.update.effect.push("clear_cache")
 
     await ctx.run({
         system: true,
@@ -89,7 +92,7 @@ module.exports.server = async function (ctx) {
                 unique: true,
             },
             data: {
-                type: "array",
+                type: "any",
                 required: true
             }
         },
