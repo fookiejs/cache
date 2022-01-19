@@ -4,6 +4,11 @@ module.exports.plugin = async function (ctx) {
         value: ["store", "redis", "nulldb", "memcache", "memorydb"]
     })
 
+    await ctx.setting({
+        name: "state",
+        value: "ok"
+    })
+
     await ctx.rule({
         name: "is_cached",
         function: async function (payload, ctx, state) {
@@ -17,7 +22,7 @@ module.exports.plugin = async function (ctx) {
             })
             if (res.data.length > 0) {
                 payload.response.data = res.data[0].data
-                console.log("from cache" , res.data)
+                console.log("from cache", res.data)
             }
             return true
         }
