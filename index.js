@@ -29,7 +29,9 @@ module.exports.client = async function (ctx) {
                 model: "cache",
                 method: "read",
                 query: {
-                    hash: ctx.cryptojs.SHA256(JSON.stringify(payload.query)).toString(),
+                    filter: {
+                        hash: ctx.cryptojs.SHA256(JSON.stringify(payload.query)).toString()
+                    }
                 }
             })
             if (res.data.data.length > 0) {
@@ -63,7 +65,9 @@ module.exports.client = async function (ctx) {
                 model: "cache",
                 method: "delete",
                 query: {
-                    model: payload.model,
+                    filter: {
+                        model: payload.model,
+                    }
                 }
             })
         }
