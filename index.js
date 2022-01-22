@@ -1,12 +1,24 @@
 module.exports.client = async function (ctx) {
-    await ctx.setting({
-        name: "out_of_cache",
-        value: ["store", "redis", "nulldb", "memcache", "memorydb"]
-    })
+    await ctx.mixin({
+        name: "cache",
+        object: {
+            lifecycle: {
+                read: {
+                    rule: ["is_cached"],
+                    effect: ["send_to_cache"],
+                },
+                count: {
+                    effect: ["send_to_cache"]
+                },
+                create: {
+                    effect: ["clear_cache"]
+                },
+                update: {
+                    effect: ["clear_cache"]
+                },
 
-    await ctx.setting({
-        name: "state",
-        value: "ok"
+            }
+        }
     })
 
     await ctx.rule({
@@ -17,11 +29,11 @@ module.exports.client = async function (ctx) {
                 model: "cache",
                 method: "read",
                 query: {
-                    hash: ctx.cryptojs.SHA256(JSON.stringify(payload)).toString(),
+                    hash: ctx.cryptojs.SHA256(JSON.stringify(payload.query)).toString(),
                 }
             })
-            if (res.data.length > 0) {
-                payload.response.data = res.data[0].data
+            if (res.data.data.length > 0) {
+                payload.response.data = res.data.data[0].data
             }
             return true
         }
@@ -30,18 +42,16 @@ module.exports.client = async function (ctx) {
     await ctx.effect({
         name: "send_to_cache",
         function: async function (payload, ctx, state) {
-            if (!ctx.local.get("setting", "out_of_cache").value.includes(payload.model)) {
-                let res = await ctx.axios.post(process.env.CACHE, {
-                    system: ctx.store.get("system_token"),
-                    model: "cache",
-                    method: "create",
-                    body: {
-                        model: payload.model,
-                        hash: ctx.cryptojs.SHA256(JSON.stringify(payload)).toString(),
-                        data: payload.response.data
-                    }
-                })
-            }
+            let res = await ctx.axios.post(process.env.CACHE, {
+                system: ctx.store.get("system_token"),
+                model: "cache",
+                method: "create",
+                body: {
+                    model: payload.model,
+                    hash: ctx.cryptojs.SHA256(JSON.stringify(payload.query)).toString(),
+                    data: payload.response.data
+                }
+            })
         }
     })
 
@@ -59,25 +69,7 @@ module.exports.client = async function (ctx) {
         }
     })
 
-    let after = ctx.local.get("mixin", "after")
 
-    after.object.lifecycle.read.rule.push("is_cached")
-    after.object.lifecycle.read.effect.push("send_to_cache")
-    after.object.lifecycle.count.effect.push("send_to_cache")
-    after.object.lifecycle.create.effect.push("clear_cache")
-    after.object.lifecycle.update.effect.push("clear_cache")
-
-    await ctx.run({
-        system: true,
-        method: "update",
-        model: "mixin",
-        query: {
-            name: "after"
-        },
-        body: {
-            object: after.object
-        }
-    })
 }
 
 
@@ -97,6 +89,10 @@ module.exports.server = async function (ctx) {
             data: {
                 type: "any",
                 required: true
+            },
+            expire: {
+                type: "number",
+                default: Infinity
             }
         },
         lifecycle: {
