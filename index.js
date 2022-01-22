@@ -1,4 +1,4 @@
-module.exports.plugin = async function (ctx) {
+module.exports.client = async function (ctx) {
     await ctx.setting({
         name: "out_of_cache",
         value: ["store", "redis", "nulldb", "memcache", "memorydb"]
@@ -22,7 +22,6 @@ module.exports.plugin = async function (ctx) {
             })
             if (res.data.length > 0) {
                 payload.response.data = res.data[0].data
-                console.log("from cache", res.data)
             }
             return true
         }
@@ -42,14 +41,13 @@ module.exports.plugin = async function (ctx) {
                         data: payload.response.data
                     }
                 })
-                console.log("send_to_cache", res.data);
             }
         }
     })
 
     await ctx.effect({
         name: "clear_cache",
-        function: async function (ctx) {
+        function: async function (payload, ctx, state) {
             let res = await ctx.axios.post(process.env.CACHE, {
                 system: ctx.store.get("system_token"),
                 model: "cache",
@@ -58,7 +56,6 @@ module.exports.plugin = async function (ctx) {
                     model: payload.model,
                 }
             })
-            console.log("clear_cache", res.data);
         }
     })
 
