@@ -27,6 +27,7 @@ module.exports.client = async function (ctx) {
     await ctx.rule({
         name: "is_cached",
         function: async function (payload, ctx, state) {
+            console.log(ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString());
             let res = await ctx.axios.post(process.env.CACHE, {
                 system: ctx.store.get("system_token"),
                 model: "cache",
@@ -37,6 +38,7 @@ module.exports.client = async function (ctx) {
                     }
                 }
             })
+            console.log(ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString());
             if (res.data.data.length > 0) {
                 payload.response.data = res.data.data[0].data
             }
