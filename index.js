@@ -24,7 +24,7 @@ module.exports.client = async function (ctx) {
         }
     })
 
-    await ctx.rule({
+    await ctx.lifecycle({
         name: "is_cached",
         function: async function (payload, ctx, state) {
             console.log(ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString());
@@ -46,7 +46,7 @@ module.exports.client = async function (ctx) {
         }
     })
 
-    await ctx.effect({
+    await ctx.lifecycle({
         name: "send_to_cache",
         function: async function (payload, ctx, state) {
             let res = await ctx.axios.post(process.env.CACHE, {
@@ -62,7 +62,7 @@ module.exports.client = async function (ctx) {
         }
     })
 
-    await ctx.effect({
+    await ctx.lifecycle({
         name: "clear_cache",
         function: async function (payload, ctx, state) {
             let res = await ctx.axios.post(process.env.CACHE, {
