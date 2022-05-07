@@ -1,3 +1,4 @@
+const sha256 = require("crypto-js/sha256")
 module.exports.client = async function (ctx) {
     await ctx.mixin({
         name: "cache",
@@ -8,7 +9,7 @@ module.exports.client = async function (ctx) {
                     effect: ["send_to_cache"],
                 },
                 count: {
-                    effect: ["send_to_cache"]
+                    effect: []
                 },
                 create: {
                     effect: ["clear_cache"]
@@ -27,21 +28,26 @@ module.exports.client = async function (ctx) {
     await ctx.lifecycle({
         name: "is_cached",
         function: async function (payload, ctx, state) {
-            console.log(ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString());
-            let res = await ctx.axios.post(process.env.CACHE, {
-                system: ctx.store.get("system_token"),
-                model: "cache",
-                method: "read",
-                query: {
-                    filter: {
-                        hash: ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString()
+            try {
+                let res = await ctx.axios.post(process.env.CACHE, {
+                    token: process.env.SYSTEM_TOKEN,
+                    model: "cache",
+                    method: "read",
+                    query: {
+                        filter: {
+                            hash: sha256(JSON.stringify({ query: payload.query, model: payload.model, method: payload.method })).toString()
+                        }
                     }
+                })
+                console.log("is_cached");
+                console.log(res.data);
+                if (res.data.data.length > 0 && res.data.status === true) {
+                    payload.response.data = JSON.parse(res.data.data[0].data)
                 }
-            })
-            console.log(ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString());
-            if (res.data.data.length > 0) {
-                payload.response.data = res.data.data[0].data
+            } catch (error) {
+                console.log(error);
             }
+
             return true
         }
     })
@@ -49,16 +55,24 @@ module.exports.client = async function (ctx) {
     await ctx.lifecycle({
         name: "send_to_cache",
         function: async function (payload, ctx, state) {
-            let res = await ctx.axios.post(process.env.CACHE, {
-                system: ctx.store.get("system_token"),
-                model: "cache",
-                method: "create",
-                body: {
-                    model: payload.model,
-                    hash: ctx.cryptojs.SHA256(JSON.stringify({ query: payload.query, model: payload.model })).toString(),
-                    data: payload.response.data
-                }
-            })
+
+            try {
+                let res = await ctx.axios.post(process.env.CACHE, {
+                    token: process.env.SYSTEM_TOKEN,
+                    model: "cache",
+                    method: "create",
+                    body: {
+                        model: payload.model,
+                        hash: sha256(JSON.stringify({ query: payload.query, model: payload.model, method: payload.method })).toString(),
+                        data: JSON.stringify(payload.response.data)
+                    }
+                })
+                console.log(res.data);
+                console.log("send_to_cache");
+            } catch (error) {
+                console.log("veri cache gönderilemedi.");
+            }
+
         }
     })
 
@@ -66,7 +80,7 @@ module.exports.client = async function (ctx) {
         name: "clear_cache",
         function: async function (payload, ctx, state) {
             let res = await ctx.axios.post(process.env.CACHE, {
-                system: ctx.store.get("system_token"),
+                token: process.env.SYSTEM_TOKEN,
                 model: "cache",
                 method: "delete",
                 query: {
@@ -96,12 +110,12 @@ module.exports.server = async function (ctx) {
                 unique: true,
             },
             data: {
-                type: "any",
+                type: "string",
                 required: true
             },
             expire: {
                 type: "number",
-                default: Infinity
+                default: 1
             }
         },
         lifecycle: {

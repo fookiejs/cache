@@ -17,5 +17,6 @@
   },
   "homepage": "https://github.com/umudikk/fookie-cache#readme",
   "dependencies": {
+    "crypto-js": "^4.1.1"
   }
 }
