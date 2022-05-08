@@ -40,7 +40,6 @@ module.exports.client = async function (ctx) {
                     }
                 })
                 console.log("is_cached");
-                console.log(res.data);
                 if (res.data.data.length > 0 && res.data.status === true) {
                     payload.response.data = JSON.parse(res.data.data[0].data)
                 }
@@ -67,7 +66,6 @@ module.exports.client = async function (ctx) {
                         data: JSON.stringify(payload.response.data)
                     }
                 })
-                console.log(res.data);
                 console.log("send_to_cache");
             } catch (error) {
                 console.log("veri cache gönderilemedi.");
