@@ -39,7 +39,6 @@ module.exports.client = async function (ctx) {
                         }
                     }
                 })
-                console.log("is_cached");
                 if (res.data.data.length > 0 && res.data.status === true) {
                     payload.response.data = JSON.parse(res.data.data[0].data)
                 }
@@ -54,7 +53,6 @@ module.exports.client = async function (ctx) {
     await ctx.lifecycle({
         name: "send_to_cache",
         function: async function (payload, ctx, state) {
-
             try {
                 let res = await ctx.axios.post(process.env.CACHE, {
                     token: process.env.SYSTEM_TOKEN,
@@ -66,7 +64,6 @@ module.exports.client = async function (ctx) {
                         data: JSON.stringify(payload.response.data)
                     }
                 })
-                console.log("send_to_cache");
             } catch (error) {
                 console.log("veri cache gönderilemedi.");
             }
