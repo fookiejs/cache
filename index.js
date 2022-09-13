@@ -52,6 +52,7 @@ module.exports = async function (ctx) {
 
     await ctx.lifecycle({
         name: "send_to_cache",
+        async: true,
         function: async function (payload, ctx, state) {
             try {
                 let res = await ctx.axios.post(process.env.CACHE, {
@@ -73,6 +74,7 @@ module.exports = async function (ctx) {
 
     await ctx.lifecycle({
         name: "clear_cache",
+        async: true,
         function: async function (payload, ctx, state) {
             let res = await ctx.axios.post(process.env.CACHE, {
                 token: process.env.SYSTEM_TOKEN,
@@ -86,8 +88,6 @@ module.exports = async function (ctx) {
             })
         }
     })
-
-
 
     await ctx.axios.post(process.env.CACHE, {
         token: process.env.SYSTEM_TOKEN,
