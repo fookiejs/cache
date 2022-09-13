@@ -1,5 +1,5 @@
 const sha256 = require("crypto-js/sha256")
-module.exports.client = async function (ctx) {
+module.exports = async function (ctx) {
     await ctx.mixin({
         name: "cache",
         object: {
@@ -88,47 +88,51 @@ module.exports.client = async function (ctx) {
     })
 
 
-}
 
-
-module.exports.server = async function (ctx) {
-    await ctx.model({
-        name: "cache",
-        schema: {
-            model: {
-                type: "string",
-                required: true
+    await ctx.axios.post(process.env.CACHE, {
+        token: process.env.SYSTEM_TOKEN,
+        model: "model",
+        method: "create",
+        body: {
+            name: "cache",
+            database: "store",
+            mixin: [],
+            schema: {
+                model: {
+                    type: "string",
+                    required: true
+                },
+                hash: {
+                    type: "string",
+                    required: true,
+                    unique: true,
+                },
+                data: {
+                    type: "string",
+                    required: true
+                },
+                expire: {
+                    type: "number",
+                    default: 1
+                }
             },
-            hash: {
-                type: "string",
-                required: true,
-                unique: true,
-            },
-            data: {
-                type: "string",
-                required: true
-            },
-            expire: {
-                type: "number",
-                default: 1
+            lifecycle: {
+                read: {
+                    role: ["system"]
+                },
+                create: {
+                    role: ["system"]
+                },
+                update: {
+                    role: ["system"]
+                },
+                count: {
+                    role: ["system"]
+                },
+                delete: {
+                    role: ["system"]
+                },
             }
-        },
-        lifecycle: {
-            read: {
-                role: ["system"]
-            },
-            create: {
-                role: ["system"]
-            },
-            update: {
-                role: ["system"]
-            },
-            count: {
-                role: ["system"]
-            },
-            delete: {
-                role: ["system"]
-            },
         }
     })
 }
