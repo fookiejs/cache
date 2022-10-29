@@ -96,7 +96,7 @@ module.exports = async function (ctx) {
         body: {
             name: "cache",
             database: "store",
-            mixin: [],
+            mixins: [],
             schema: {
                 model: {
                     type: "string",
