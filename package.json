@@ -1,22 +1,37 @@
 {
-  "name": "fookie-cache",
-  "version": "0.1.4",
-  "description": "Cache plugin for Fookie JS",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/umudikk/fookie-cache.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/umudikk/fookie-cache/issues"
-  },
-  "homepage": "https://github.com/umudikk/fookie-cache#readme",
-  "dependencies": {
-    "crypto-js": "^4.1.1"
-  }
+    "name": "fookie-cache",
+    "version": "0.999.0",
+    "description": "Fookie JS Http server plugin",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "vitest",
+        "coverage": "vitest run --coverage",
+        "build": "tsc",
+        "lint": "npx eslint packages"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fookiejs/fookie-server.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/fookiejs/fookie-server/issues"
+    },
+    "homepage": "https://github.com/fookiejs/fookie-server#readme",
+    "devDependencies": {
+        "@types/lodash": "^4.14.191",
+        "@types/node": "^18.15.11",
+        "@typescript-eslint/eslint-plugin": "^5.56.0",
+        "@typescript-eslint/parser": "^5.56.0",
+        "@vitest/coverage-istanbul": "^0.29.3",
+        "@vitest/ui": "^0.29.3",
+        "eslint": "^8.36.0",
+        "typescript": "^5.0.2",
+        "vitest": "^0.29.3"
+    },
+    "dependencies": {
+        "crypto-js": "^4.1.1"
+    }
 }
