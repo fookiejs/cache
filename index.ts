@@ -1,1 +1,1 @@
-export * as Cache from "./packages/cache"
+export * from "./packages/cache"
