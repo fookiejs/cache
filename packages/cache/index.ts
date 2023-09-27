@@ -7,7 +7,7 @@ function sha256(data) {
     return hash.digest("hex")
 }
 
-export async function initCache(database: Types.DatabaseInterface): Promise<Types.MixinInterface> {
+export async function init_cache(database: Types.DatabaseInterface): Promise<Types.MixinInterface> {
     const fookie_cache = await Builder.model({
         name: "fookie_cache",
         database,
