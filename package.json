@@ -1,6 +1,6 @@
 {
     "name": "fookie-cache",
-    "version": "0.999.4",
+    "version": "0.999.5",
     "description": "Fookie JS cache plugin.",
     "main": "dist/index.js",
     "scripts": {
