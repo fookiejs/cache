@@ -33,7 +33,7 @@
         "vitest": "^0.29.3"
     },
     "peerDependencies": {
-        "fookie": "0.999.29"
+        "fookie": "0.999.32"
     },
     "dependencies": {
         "crypto-js": "^4.1.1"
