@@ -1,7 +1,7 @@
 {
     "name": "fookie-cache",
-    "version": "0.999.3",
-    "description": "Fookie JS Http server plugin",
+    "version": "0.999.4",
+    "description": "Fookie JS cache plugin.",
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
