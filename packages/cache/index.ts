@@ -1,5 +1,5 @@
 import crypto from "crypto"
-import { Builder, Types, Type, Role, Method, run } from "fookie"
+import { Builder, Types, Method, Dictionary, run } from "fookie"
 
 function sha256(data) {
     const hash = crypto.createHash("sha256")
@@ -13,52 +13,54 @@ export async function init_cache(database: Types.DatabaseInterface): Promise<Typ
         database,
         schema: {
             model: {
-                type: Type.Text,
+                type: Dictionary.Type.text,
                 required: true,
             },
             hash: {
-                type: Type.Text,
+                type: Dictionary.Type.text,
                 required: true,
                 unique: true,
             },
             data: {
-                type: Type.Text,
+                type: Dictionary.Type.text,
                 required: true,
             },
         },
         bind: {
             create: {
-                role: [Role.system],
+                role: [Dictionary.Lifecycle.system],
             },
             read: {
-                role: [Role.system],
+                role: [Dictionary.Lifecycle.system],
             },
             update: {
-                role: [Role.nobody],
+                role: [Dictionary.Lifecycle.nobody],
             },
             delete: {
-                role: [Role.system],
+                role: [Dictionary.Lifecycle.system],
             },
             sum: {
-                role: [Role.nobody],
+                role: [Dictionary.Lifecycle.nobody],
             },
             test: {
-                role: [Role.system],
+                role: [Dictionary.Lifecycle.system],
             },
         },
     })
 
     async function is_cached(payload) {
         try {
-            const response = await run({
+            const response = await run<any, "read">({
                 token: process.env.SYSTEM_TOKEN,
                 model: fookie_cache,
                 method: Method.Read,
                 query: {
                     filter: {
-                        hash: sha256(
-                            JSON.stringify({ query: payload.query, model: payload.model.name, method: payload.method })
-                        ).toString(),
+                        hash: {
+                            equals: sha256(
+                                JSON.stringify({ query: payload.query, model: payload.model.name, method: payload.method })
+                            ).toString(),
+                        },
                     },
                 },
             })
@@ -100,7 +102,7 @@ export async function init_cache(database: Types.DatabaseInterface): Promise<Typ
                 method: Method.Delete,
                 query: {
                     filter: {
-                        model: payload.model.name,
+                        model: { equals: payload.model.name },
                     },
                 },
             })
